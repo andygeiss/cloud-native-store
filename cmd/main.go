@@ -21,6 +21,11 @@ func main() {
 
 	// Initialize a JSON file logger to log transactional data.
 	logger := consistency.NewJsonFileLogger[string, any](".cache/transactions.json")
+	defer func() {
+		if err := logger.Close(); err != nil {
+			log.Fatalf("error during close: %v", err)
+		}
+	}()
 
 	// Create a new object service and configure it with the transactional logger and the in-memory port.
 	port := inmemory.NewObjectStore[string, any](1)
