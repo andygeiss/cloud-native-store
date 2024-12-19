@@ -75,6 +75,9 @@ func (a *ObjectService[K, V]) Setup() (err error) {
 
 // Teardown cleans up any resources used by the ObjectService (currently a no-op).
 func (a *ObjectService[K, V]) Teardown() {
+	if err := a.tx.Close(); err != nil {
+		log.Fatalf("error during close: %v", err)
+	}
 }
 
 // WithTransactionalLogger sets the transactional logger for the service and returns the updated service.
