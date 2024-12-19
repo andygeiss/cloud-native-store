@@ -73,7 +73,7 @@ func (a *ObjectService[K, V]) Setup() (err error) {
 	return nil
 }
 
-// Teardown cleans up any resources used by the ObjectService (currently a no-op).
+// Teardown cleans up any resources used by the ObjectService.
 func (a *ObjectService[K, V]) Teardown() {
 	if err := a.tx.Close(); err != nil {
 		log.Fatalf("error during close: %v", err)
