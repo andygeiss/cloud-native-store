@@ -49,27 +49,6 @@ func (a *ObjectService[K, V]) Put(ctx context.Context, key K, value V) (err erro
 
 // Setup initializes the service by processing pending events from the transactional logger.
 func (a *ObjectService[K, V]) Setup() (err error) {
-	// If no transactional logger is present, return early.
-	if a.tx == nil {
-		return nil
-	}
-
-	// Read pending events from the logger.
-	eventCh, _ := a.tx.ReadEvents()
-	ctx := context.Background()
-
-	// Process each event in the channel.
-	for event := range eventCh {
-		switch event.EventType {
-		case consistency.EventTypeDelete:
-			log.Printf("event delete: %v", event)
-			_ = a.Delete(ctx, event.Key)
-		case consistency.EventTypePut:
-			_ = a.Put(ctx, event.Key, event.Value)
-			log.Printf("event put: %v", event)
-		}
-	}
-
 	return nil
 }
 
