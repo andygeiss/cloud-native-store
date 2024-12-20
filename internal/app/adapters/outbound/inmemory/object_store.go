@@ -15,28 +15,28 @@ var (
 
 // ObjectStore is an in-memory object storage that uses sharding for efficient access.
 // K represents the type of the keys (comparable) and V represents the type of the values (any).
-type ObjectStore[K comparable, V any] struct {
-	shards efficiency.Sharding[K, V]
+type ObjectStore struct {
+	shards efficiency.Sharding[string, string]
 }
 
 // NewObjectStore initializes a new ObjectStore with the given number of shards.
 // It returns an implementation of the ports.ObjectPort interface.
-func NewObjectStore[K comparable, V any](numShards int) ports.ObjectPort[K, V] {
-	return &ObjectStore[K, V]{
-		shards: efficiency.NewSharding[K, V](numShards),
+func NewObjectStore(numShards int) ports.ObjectPort[string, string] {
+	return &ObjectStore{
+		shards: efficiency.NewSharding[string, string](numShards),
 	}
 }
 
 // Delete removes a key and its associated value from the store.
 // If the key does not exist, it silently returns without an error.
-func (a *ObjectStore[K, V]) Delete(ctx context.Context, key K) (err error) {
+func (a *ObjectStore) Delete(ctx context.Context, key string) (err error) {
 	a.shards.Delete(key)
 	return nil
 }
 
 // Get retrieves the value associated with the given key.
 // If the key does not exist, it returns an error (ErrorKeyDoesNotExist).
-func (a *ObjectStore[K, V]) Get(ctx context.Context, key K) (value V, err error) {
+func (a *ObjectStore) Get(ctx context.Context, key string) (value string, err error) {
 	value, exists := a.shards.Get(key)
 	if !exists {
 		return value, ErrorKeyDoesNotExist
@@ -45,7 +45,7 @@ func (a *ObjectStore[K, V]) Get(ctx context.Context, key K) (value V, err error)
 }
 
 // Put inserts or updates the value associated with the given key in the store.
-func (a *ObjectStore[K, V]) Put(ctx context.Context, key K, value V) (err error) {
+func (a *ObjectStore) Put(ctx context.Context, key, value string) (err error) {
 	a.shards.Put(key, value)
 	return nil
 }

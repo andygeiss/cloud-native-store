@@ -14,7 +14,7 @@ func TestObjectService_Delete(t *testing.T) {
 	key := "test-key"
 	logger := NewMockLogger[string, string]()
 	port := NewMockPort[string, string]()
-	service := services.NewObjectService[string, string]().WithTransactionalLogger(logger).WithPort(port)
+	service := services.NewObjectService().WithTransactionalLogger(logger).WithPort(port)
 
 	port.data[key] = "value"
 	err := service.Delete(ctx, key)
@@ -31,7 +31,7 @@ func TestObjectService_Get(t *testing.T) {
 	key := "test-key"
 	value := "test-value"
 	port := NewMockPort[string, string]()
-	service := services.NewObjectService[string, string]().WithPort(port)
+	service := services.NewObjectService().WithPort(port)
 
 	port.data[key] = value
 
@@ -47,7 +47,7 @@ func TestObjectService_Put(t *testing.T) {
 	value := "test-value"
 	logger := NewMockLogger[string, string]()
 	port := NewMockPort[string, string]()
-	service := services.NewObjectService[string, string]().WithTransactionalLogger(logger).WithPort(port)
+	service := services.NewObjectService().WithTransactionalLogger(logger).WithPort(port)
 
 	err := service.Put(ctx, key, value)
 
@@ -64,7 +64,7 @@ func TestObjectService_FunctionPatterns(t *testing.T) {
 	value := "test-value"
 	logger := NewMockLogger[string, string]()
 	port := NewMockPort[string, string]()
-	service := services.NewObjectService[string, string]().WithTransactionalLogger(logger).WithPort(port)
+	service := services.NewObjectService().WithTransactionalLogger(logger).WithPort(port)
 
 	// Test Delete pattern
 	port.data[key] = value
@@ -103,7 +103,7 @@ func TestObjectService_Setup(t *testing.T) {
 
 	logger := NewMockLogger[string, string]()
 	port := NewMockPort[string, string]()
-	service := services.NewObjectService[string, string]().WithTransactionalLogger(logger).WithPort(port)
+	service := services.NewObjectService().WithTransactionalLogger(logger).WithPort(port)
 
 	logger.events = append(logger.events,
 		consistency.Event[string, string]{EventType: consistency.EventTypePut, Key: "test-key", Value: "test-value"},

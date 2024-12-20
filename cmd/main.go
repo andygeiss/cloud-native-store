@@ -3,6 +3,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/andygeiss/cloud-native-store/internal/app/adapters/common/config"
 	"github.com/andygeiss/cloud-native-store/internal/app/adapters/inbound/api"
@@ -13,24 +14,26 @@ import (
 )
 
 func main() {
+
 	// Create a new configuration object, specifying paths to the TLS certificate
 	// and key files needed for secure communication.
-	cfg := &config.Config[string, any]{
-		Server: config.Server{CertFile: ".tls/server.crt", KeyFile: ".tls/server.key"},
+	cfg := &config.Config{
+		Key:    security.Getenv("ENCRYPTION_KEY"),
+		Server: config.Server{CertFile: os.Getenv("SERVER_CERTIFICATE"), KeyFile: os.Getenv("SERVER_KEY")},
 	}
 
 	// Initialize a JSON file logger to log transactional data.
-	logger := consistency.NewJsonFileLogger[string, any](".cache/transactions.json")
+	logger := consistency.NewJsonFileLogger[string, string](os.Getenv("TRANSACTIONAL_LOG"))
 
 	// Create a new object service and configure it with the transactional logger and the in-memory port.
-	port := inmemory.NewObjectStore[string, any](1)
+	port := inmemory.NewObjectStore(1)
 	service := services.
-		NewObjectService[string, any]().
+		NewObjectService().
 		WithTransactionalLogger(logger).
 		WithPort(port)
 
 	// Add the service instance to the configuration.
-	cfg.Services = config.Services[string, any]{
+	cfg.Services = config.Services{
 		ObjectService: service,
 	}
 
@@ -48,10 +51,10 @@ func main() {
 	srv := security.NewServer(mux, "localhost")
 	// Ensure the server is properly closed when the program exits.
 	defer srv.Close()
-	log.Printf("start listening...")
 
 	// Start the server using TLS for secure communication, providing the certificate
 	// and key files specified in the configuration. Log an error if server startup fails.
+	log.Printf("start listening...")
 	if err := srv.ListenAndServeTLS(cfg.Server.CertFile, cfg.Server.KeyFile); err != nil {
 		log.Fatalf("listening failed: %v", err)
 	}

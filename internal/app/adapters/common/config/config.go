@@ -2,9 +2,10 @@ package config
 
 import "github.com/andygeiss/cloud-native-store/internal/app/core/services"
 
-type Config[K comparable, V any] struct {
-	Server   Server `json:"server"`
-	Services Services[K, V]
+type Config struct {
+	Key      [32]byte `json:"-"`
+	Server   Server   `json:"server"`
+	Services Services `json:"-"`
 }
 
 type Server struct {
@@ -12,6 +13,6 @@ type Server struct {
 	KeyFile  string `json:"key_file"`
 }
 
-type Services[K comparable, V any] struct {
-	ObjectService *services.ObjectService[K, V]
+type Services struct {
+	ObjectService *services.ObjectService `json:"-"`
 }

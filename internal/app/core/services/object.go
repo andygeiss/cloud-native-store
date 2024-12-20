@@ -11,23 +11,21 @@ import (
 	"github.com/andygeiss/cloud-native-utils/stability"
 )
 
-// ObjectService is a generic service for managing objects with transactional logging.
-// It uses a transactional logger and an ObjectPort to interact with objects.
-type ObjectService[K comparable, V any] struct {
-	tx   consistency.Logger[K, V] // Transactional logger for recording operations.
-	port ports.ObjectPort[K, V]   // Port interface for object interactions (e.g., CRUD operations).
+type ObjectService struct {
+	tx   consistency.Logger[string, string] // Transactional logger for recording operations.
+	port ports.ObjectPort[string, string]   // Port interface for object interactions (e.g., CRUD operations).
 }
 
 // NewObjectService creates a new instance of ObjectService without any dependencies.
-func NewObjectService[K comparable, V any]() *ObjectService[K, V] {
-	return &ObjectService[K, V]{}
+func NewObjectService() *ObjectService {
+	return &ObjectService{}
 }
 
 // Delete removes an object identified by the key from the port and logs the operation.
-func (a *ObjectService[K, V]) Delete(ctx context.Context, key K) (err error) {
+func (a *ObjectService) Delete(ctx context.Context, key string) (err error) {
 
-	fn := func() service.Function[K, V] {
-		return func(context.Context, K) (value V, err error) {
+	fn := func() service.Function[string, string] {
+		return func(context.Context, string) (value string, err error) {
 			err = a.port.Delete(ctx, key)
 			return value, err
 		}
@@ -48,10 +46,10 @@ func (a *ObjectService[K, V]) Delete(ctx context.Context, key K) (err error) {
 }
 
 // Get retrieves an object identified by the key from the port.
-func (a *ObjectService[K, V]) Get(ctx context.Context, key K) (value V, err error) {
+func (a *ObjectService) Get(ctx context.Context, key string) (value string, err error) {
 
-	fn := func() service.Function[K, V] {
-		return func(context.Context, K) (V, error) {
+	fn := func() service.Function[string, string] {
+		return func(context.Context, string) (string, error) {
 			return a.port.Get(ctx, key)
 		}
 	}()
@@ -70,10 +68,10 @@ func (a *ObjectService[K, V]) Get(ctx context.Context, key K) (value V, err erro
 }
 
 // Put adds or updates an object identified by the key and logs the operation.
-func (a *ObjectService[K, V]) Put(ctx context.Context, key K, value V) (err error) {
+func (a *ObjectService) Put(ctx context.Context, key, value string) (err error) {
 
-	fn := func() service.Function[K, V] {
-		return func(context.Context, K) (V, error) {
+	fn := func() service.Function[string, string] {
+		return func(context.Context, string) (string, error) {
 			err = a.port.Put(ctx, key, value)
 			return value, err
 		}
@@ -95,7 +93,7 @@ func (a *ObjectService[K, V]) Put(ctx context.Context, key K, value V) (err erro
 
 // Setup initializes the ObjectService by processing pending events
 // from the transactional logger and applying them to the data store.
-func (a *ObjectService[K, V]) Setup() (err error) {
+func (a *ObjectService) Setup() (err error) {
 	// Start reading events and errors from the transactional logger.
 	eventCh, errCh := a.tx.ReadEvents()
 
@@ -133,20 +131,20 @@ func (a *ObjectService[K, V]) Setup() (err error) {
 }
 
 // Teardown cleans up any resources used by the ObjectService.
-func (a *ObjectService[K, V]) Teardown() {
+func (a *ObjectService) Teardown() {
 	if err := a.tx.Close(); err != nil {
 		log.Fatalf("error during close: %v", err)
 	}
 }
 
 // WithTransactionalLogger sets the transactional logger for the service and returns the updated service.
-func (a *ObjectService[K, V]) WithTransactionalLogger(logger consistency.Logger[K, V]) *ObjectService[K, V] {
+func (a *ObjectService) WithTransactionalLogger(logger consistency.Logger[string, string]) *ObjectService {
 	a.tx = logger
 	return a
 }
 
 // WithPort sets the ObjectPort for the service and returns the updated service.
-func (a *ObjectService[K, V]) WithPort(port ports.ObjectPort[K, V]) *ObjectService[K, V] {
+func (a *ObjectService) WithPort(port ports.ObjectPort[string, string]) *ObjectService {
 	a.port = port
 	return a
 }
