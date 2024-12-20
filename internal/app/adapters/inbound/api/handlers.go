@@ -58,7 +58,7 @@ func Get[K comparable, V any](cfg *config.Config[K, V]) http.HandlerFunc {
 
 		val, err := cfg.Services.ObjectService.Get(r.Context(), req.Key)
 		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
+			w.WriteHeader(http.StatusNotFound)
 			return
 		}
 
