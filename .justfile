@@ -21,3 +21,4 @@ setup:
 
 # Test the Go sources (Units).
 test:
+    @go test -v ./internal/app/core/services/...
