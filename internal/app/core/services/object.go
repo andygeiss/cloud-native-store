@@ -69,7 +69,8 @@ func (a *ObjectService) Get(ctx context.Context, key string) (value string, err 
 		return
 	}
 
-	value = a.decryptValue(value)
+	plaintext, _ := security.Decrypt([]byte(value), a.cfg.Key)
+	value = string(plaintext)
 
 	return value, nil
 }
@@ -77,7 +78,7 @@ func (a *ObjectService) Get(ctx context.Context, key string) (value string, err 
 // Put adds or updates an object identified by the key and logs the operation.
 func (a *ObjectService) Put(ctx context.Context, key, value string) (err error) {
 
-	value = a.encryptValue(value)
+	value = string(security.Encrypt([]byte(value), a.cfg.Key))
 
 	fn := func() service.Function[string, string] {
 		return func(context.Context, string) (string, error) {
@@ -156,13 +157,4 @@ func (a *ObjectService) WithTransactionalLogger(logger consistency.Logger[string
 func (a *ObjectService) WithPort(port ports.ObjectPort[string, string]) *ObjectService {
 	a.port = port
 	return a
-}
-
-func (a *ObjectService) decryptValue(ciphertext string) string {
-	plaintext, _ := security.Decrypt([]byte(ciphertext), a.cfg.Key)
-	return string(plaintext)
-}
-
-func (a *ObjectService) encryptValue(plaintext string) string {
-	return string(security.Encrypt([]byte(plaintext), a.cfg.Key))
 }
