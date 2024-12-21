@@ -5,20 +5,25 @@ import (
 	"log"
 	"time"
 
+	"github.com/andygeiss/cloud-native-store/internal/app/config"
 	"github.com/andygeiss/cloud-native-store/internal/app/core/ports"
 	"github.com/andygeiss/cloud-native-utils/consistency"
+	"github.com/andygeiss/cloud-native-utils/security"
 	"github.com/andygeiss/cloud-native-utils/service"
 	"github.com/andygeiss/cloud-native-utils/stability"
 )
 
 type ObjectService struct {
+	cfg  *config.Config
 	tx   consistency.Logger[string, string] // Transactional logger for recording operations.
 	port ports.ObjectPort[string, string]   // Port interface for object interactions (e.g., CRUD operations).
 }
 
 // NewObjectService creates a new instance of ObjectService without any dependencies.
-func NewObjectService() *ObjectService {
-	return &ObjectService{}
+func NewObjectService(cfg *config.Config) *ObjectService {
+	return &ObjectService{
+		cfg: cfg,
+	}
 }
 
 // Delete removes an object identified by the key from the port and logs the operation.
@@ -64,11 +69,15 @@ func (a *ObjectService) Get(ctx context.Context, key string) (value string, err 
 		return
 	}
 
+	value = a.decryptValue(value)
+
 	return value, nil
 }
 
 // Put adds or updates an object identified by the key and logs the operation.
 func (a *ObjectService) Put(ctx context.Context, key, value string) (err error) {
+
+	value = a.encryptValue(value)
 
 	fn := func() service.Function[string, string] {
 		return func(context.Context, string) (string, error) {
@@ -147,4 +156,13 @@ func (a *ObjectService) WithTransactionalLogger(logger consistency.Logger[string
 func (a *ObjectService) WithPort(port ports.ObjectPort[string, string]) *ObjectService {
 	a.port = port
 	return a
+}
+
+func (a *ObjectService) decryptValue(ciphertext string) string {
+	plaintext, _ := security.Decrypt([]byte(ciphertext), a.cfg.Key)
+	return string(plaintext)
+}
+
+func (a *ObjectService) encryptValue(plaintext string) string {
+	return string(security.Encrypt([]byte(plaintext), a.cfg.Key))
 }

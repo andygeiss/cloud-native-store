@@ -4,17 +4,20 @@ import (
 	"context"
 	"testing"
 
+	"github.com/andygeiss/cloud-native-store/internal/app/config"
 	"github.com/andygeiss/cloud-native-store/internal/app/core/services"
 	"github.com/andygeiss/cloud-native-utils/assert"
 	"github.com/andygeiss/cloud-native-utils/consistency"
+	"github.com/andygeiss/cloud-native-utils/security"
 )
 
 func TestObjectService_Delete(t *testing.T) {
+	cfg := &config.Config{Key: security.GenerateKey()}
 	ctx := context.Background()
 	key := "test-key"
 	logger := NewMockLogger[string, string]()
 	port := NewMockPort[string, string]()
-	service := services.NewObjectService().WithTransactionalLogger(logger).WithPort(port)
+	service := services.NewObjectService(cfg).WithTransactionalLogger(logger).WithPort(port)
 
 	port.data[key] = "value"
 	err := service.Delete(ctx, key)
@@ -27,11 +30,12 @@ func TestObjectService_Delete(t *testing.T) {
 }
 
 func TestObjectService_Get(t *testing.T) {
+	cfg := &config.Config{Key: security.GenerateKey()}
 	ctx := context.Background()
 	key := "test-key"
 	value := "test-value"
 	port := NewMockPort[string, string]()
-	service := services.NewObjectService().WithPort(port)
+	service := services.NewObjectService(cfg).WithPort(port)
 
 	port.data[key] = value
 
@@ -42,12 +46,13 @@ func TestObjectService_Get(t *testing.T) {
 }
 
 func TestObjectService_Put(t *testing.T) {
+	cfg := &config.Config{Key: security.GenerateKey()}
 	ctx := context.Background()
 	key := "test-key"
 	value := "test-value"
 	logger := NewMockLogger[string, string]()
 	port := NewMockPort[string, string]()
-	service := services.NewObjectService().WithTransactionalLogger(logger).WithPort(port)
+	service := services.NewObjectService(cfg).WithTransactionalLogger(logger).WithPort(port)
 
 	err := service.Put(ctx, key, value)
 
@@ -59,12 +64,13 @@ func TestObjectService_Put(t *testing.T) {
 }
 
 func TestObjectService_FunctionPatterns(t *testing.T) {
+	cfg := &config.Config{Key: security.GenerateKey()}
 	ctx := context.Background()
 	key := "test-key"
 	value := "test-value"
 	logger := NewMockLogger[string, string]()
 	port := NewMockPort[string, string]()
-	service := services.NewObjectService().WithTransactionalLogger(logger).WithPort(port)
+	service := services.NewObjectService(cfg).WithTransactionalLogger(logger).WithPort(port)
 
 	// Test Delete pattern
 	port.data[key] = value
@@ -86,6 +92,7 @@ func TestObjectService_FunctionPatterns(t *testing.T) {
 }
 
 func TestObjectService_Setup(t *testing.T) {
+	cfg := &config.Config{Key: security.GenerateKey()}
 	eventCh := make(chan consistency.Event[string, string], 2)
 	errCh := make(chan error, 1)
 
@@ -103,7 +110,7 @@ func TestObjectService_Setup(t *testing.T) {
 
 	logger := NewMockLogger[string, string]()
 	port := NewMockPort[string, string]()
-	service := services.NewObjectService().WithTransactionalLogger(logger).WithPort(port)
+	service := services.NewObjectService(cfg).WithTransactionalLogger(logger).WithPort(port)
 
 	logger.events = append(logger.events,
 		consistency.Event[string, string]{EventType: consistency.EventTypePut, Key: "test-key", Value: "test-value"},

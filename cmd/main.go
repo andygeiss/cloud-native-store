@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/andygeiss/cloud-native-store/internal/app/adapters/common/config"
 	"github.com/andygeiss/cloud-native-store/internal/app/adapters/inbound/api"
 	"github.com/andygeiss/cloud-native-store/internal/app/adapters/outbound/inmemory"
+	"github.com/andygeiss/cloud-native-store/internal/app/config"
 	"github.com/andygeiss/cloud-native-store/internal/app/core/services"
 	"github.com/andygeiss/cloud-native-utils/consistency"
 	"github.com/andygeiss/cloud-native-utils/security"
@@ -28,14 +28,9 @@ func main() {
 	// Create a new object service and configure it with the transactional logger and the in-memory port.
 	port := inmemory.NewObjectStore(1)
 	service := services.
-		NewObjectService().
+		NewObjectService(cfg).
 		WithTransactionalLogger(logger).
 		WithPort(port)
-
-	// Add the service instance to the configuration.
-	cfg.Services = config.Services{
-		ObjectService: service,
-	}
 
 	// Set up the service. If an error occurs during setup, log it and terminate the program.
 	if err := service.Setup(); err != nil {
@@ -45,7 +40,7 @@ func main() {
 	defer service.Teardown()
 
 	// Initialize the API router using the configuration object.
-	mux := api.Route(cfg)
+	mux := api.Route(service)
 
 	// Create a new secure server instance, binding it to the localhost address.
 	srv := security.NewServer(mux, "localhost")
