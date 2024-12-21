@@ -19,6 +19,83 @@ The motivation behind **Cloud Native Store** is to provide a practical example o
 3. Offer a reference implementation for features like encryption, transactional logging, and stability mechanisms.
 4. Inspire developers to adopt cloud-native patterns in their projects.
 
+## Project Setup and Run Instructions
+
+Follow these steps to set up and run the **Cloud Native Store**:
+
+### Prerequisites
+1. Install [Go](https://go.dev/) (version 1.18 or higher).
+2. Install [mkcert](https://github.com/FiloSottile/mkcert) for generating local TLS certificates.
+3. Create an `.env` file with the following contents:
+
+```env
+ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+SERVER_CERTIFICATE=".tls/server.crt"
+SERVER_KEY=".tls/server.key"
+TRANSACTIONAL_LOG=".cache/transactions.json"
+```
+
+### Commands
+
+#### Run the Service
+To start the service:
+```bash
+just run
+```
+
+#### Set Up the Service
+To set up the necessary environment, including generating local TLS certificates:
+```bash
+just setup
+```
+This command will:
+- Install `mkcert` (via Homebrew).
+- Create the directories `.cache` and `.tls`.
+- Generate a self-signed certificate for `localhost`.
+
+#### Test the Service
+To run unit tests:
+```bash
+just test
+```
+This will execute tests for the core service logic.
+
+---
+
+### Directory Structure Overview
+
+```
+.
+├── LICENSE               # License file
+├── README.md             # Documentation file
+├── cmd/
+│   └── main.go          # Entry point of the application
+├── go.mod                # Go module definition
+├── go.sum                # Go dependencies lock file
+├── internal/
+│   └── app/
+│       ├── adapters/    # Adapters for inbound and outbound communication
+│       │   ├── inbound/
+│       │   │   └── api/ # HTTP API handlers and router
+│       │   │       ├── handlers.go
+│       │   │       └── router.go
+│       │   └── outbound/
+│       │       └── inmemory/ # In-memory object storage implementation
+│       │           └── object_store.go
+│       ├── config/      # Configuration handling
+│       │   └── config.go
+│       └── core/        # Core domain logic
+│           ├── ports/   # Interfaces for core abstractions
+│           │   └── object.go
+│           └── services/ # Business logic implementations
+│               ├── mocks_test.go
+│               ├── object.go
+│               └── object_test.go
+└── logo.png              # Project logo
+```
+
+---
+
 ## How `main.go` Puts Everything Together
 
 The `main.go` file is the entry point of the application, orchestrating the various components of the **Cloud Native Store** to create a functional and secure server. Below is a breakdown of its key aspects:
@@ -33,7 +110,8 @@ Code snippet:
 ```go
 cfg := &config.Config{
     Key:    security.Getenv("ENCRYPTION_KEY"),
-    Server: config.Server{CertFile: os.Getenv("SERVER_CERTIFICATE"), KeyFile: os.Getenv("SERVER_KEY")},
+    Server: config.Server{CertFile: os.Getenv("SERVER_CERTIFICATE"),
+    KeyFile: os.Getenv("SERVER_KEY")},
 }
 ```
 
