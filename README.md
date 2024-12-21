@@ -8,6 +8,7 @@
 [![Releases](https://img.shields.io/github/v/release/andygeiss/cloud-native-store)](https://github.com/andygeiss/cloud-native-store/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/andygeiss/cloud-native-store)](https://goreportcard.com/report/github.com/andygeiss/cloud-native-store)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/df82f7d9fa07469eadd726342e837197)](https://app.codacy.com/gh/andygeiss/cloud-native-store/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/df82f7d9fa07469eadd726342e837197)](https://app.codacy.com/gh/andygeiss/cloud-native-store/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_coverage)
 
 **Cloud Native Store** is a Go-based key-value store showcasing cloud-native patterns like transactional logging, data sharding, encryption, TLS, and circuit breakers. Built with hexagonal architecture for modularity and extensibility, it includes a robust API and in-memory storage for efficiency and stability.
 
