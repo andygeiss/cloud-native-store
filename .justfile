@@ -45,7 +45,6 @@ cloud-build-setup:
 
 # Build a docker image using Google Cloud Build.
 cloud-build:
-    @echo $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_DOCKER_REPOSITORY/$GCP_DOCKER_IMAGE
     @gcloud builds submit --region=$GCP_REGION \
         --tag $GCP_REGION-docker.pkg.dev/$GCP_PROJECT_ID/$GCP_DOCKER_REPOSITORY/$GCP_DOCKER_IMAGE
 
