@@ -14,7 +14,6 @@ import (
 )
 
 func main() {
-
 	// Create a new configuration object, specifying paths to the TLS certificate
 	// and key files needed for secure communication.
 	cfg := &config.Config{
@@ -43,7 +42,7 @@ func main() {
 	mux := api.Route(service)
 
 	// Create a new secure server instance, binding it to the localhost address.
-	srv := security.NewServer(mux, "localhost")
+	srv := security.NewServer(mux, os.Getenv("SERVER_DOMAIN"))
 	// Ensure the server is properly closed when the program exits.
 	defer srv.Close()
 
