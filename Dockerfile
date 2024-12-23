@@ -1,5 +1,5 @@
 # Stage 1: Compile the service.
-FROM golang:latest as build
+FROM golang:1.23.2 as build
 COPY . /src
 WORKDIR /src
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o service ./cmd/main.go
