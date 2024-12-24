@@ -46,7 +46,10 @@ func (a *ObjectService) Delete(ctx context.Context, key string) (err error) {
 		return
 	}
 
-	a.tx.WriteDelete(key)
+	if a.tx != nil {
+		a.tx.WriteDelete(key)
+	}
+
 	return nil
 }
 
@@ -97,13 +100,22 @@ func (a *ObjectService) Put(ctx context.Context, key, value string) (err error) 
 		return
 	}
 
-	a.tx.WritePut(key, value)
+	if a.tx != nil {
+		a.tx.WritePut(key, value)
+	}
+
 	return nil
 }
 
 // Setup initializes the ObjectService by processing pending events
 // from the transactional logger and applying them to the data store.
 func (a *ObjectService) Setup() (err error) {
+
+	// Do not read events if there is no logger configured.
+	if a.tx == nil {
+		return
+	}
+
 	// Start reading events and errors from the transactional logger.
 	eventCh, errCh := a.tx.ReadEvents()
 

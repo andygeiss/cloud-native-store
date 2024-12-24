@@ -2,33 +2,29 @@
 package main
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/andygeiss/cloud-native-store/internal/app/adapters/inbound/api"
 	"github.com/andygeiss/cloud-native-store/internal/app/adapters/outbound/inmemory"
 	"github.com/andygeiss/cloud-native-store/internal/app/config"
 	"github.com/andygeiss/cloud-native-store/internal/app/core/services"
-	"github.com/andygeiss/cloud-native-utils/consistency"
 	"github.com/andygeiss/cloud-native-utils/security"
 )
 
 func main() {
-	// Create a new configuration object, specifying paths to the TLS certificate
-	// and key files needed for secure communication.
+	// Create a new configuration object.
 	cfg := &config.Config{
-		Key:    security.Getenv("ENCRYPTION_KEY"),
-		Server: config.Server{CertFile: os.Getenv("SERVER_CERTIFICATE"), KeyFile: os.Getenv("SERVER_KEY")},
+		Key: security.Getenv("ENCRYPTION_KEY"),
 	}
-
-	// Initialize a JSON file logger to log transactional data.
-	logger := consistency.NewJsonFileLogger[string, string](os.Getenv("TRANSACTIONAL_LOG"))
 
 	// Create a new object service and configure it with the transactional logger and the in-memory port.
 	port := inmemory.NewObjectStore(1)
 	service := services.
 		NewObjectService(cfg).
-		WithTransactionalLogger(logger).
+		// WithTransactionalLogger(logger).
 		WithPort(port)
 
 	// Set up the service. If an error occurs during setup, log it and terminate the program.
@@ -41,15 +37,9 @@ func main() {
 	// Initialize the API router using the configuration object.
 	mux := api.Route(service)
 
-	// Create a new secure server instance, binding it to the localhost address.
-	srv := security.NewServer(mux, os.Getenv("SERVER_DOMAIN"))
-	// Ensure the server is properly closed when the program exits.
-	defer srv.Close()
-
-	// Start the server using TLS for secure communication, providing the certificate
-	// and key files specified in the configuration. Log an error if server startup fails.
+	// Start the HTTP server.
 	log.Printf("start listening...")
-	if err := srv.ListenAndServeTLS(cfg.Server.CertFile, cfg.Server.KeyFile); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), mux); err != nil {
 		log.Fatalf("listening failed: %v", err)
 	}
 }
