@@ -1,3 +1,4 @@
 .cache
+.coverprofile.out
 .env
 .tls
