@@ -1,4 +1,4 @@
-// This is the main package for initializing and running the server.
+// This program generates a new 256-bit key and prints it as a hex string.
 package main
 
 import (
@@ -9,6 +9,8 @@ import (
 )
 
 func main() {
+	// Generate a new 256-bit key.
 	key := security.GenerateKey()
+	// Print the key as a hex string.
 	fmt.Printf("%s\n", hex.EncodeToString(key[:]))
 }
