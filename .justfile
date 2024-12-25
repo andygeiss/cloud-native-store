@@ -1,5 +1,24 @@
 set dotenv-load
 
+# Build
+build:
+    @podman build -t cloud-native-store .
+
+# Generate an encryption key.
+genkey:
+    @go run cmd/genkey/main.go
+
+# Run the service.
+run:
+    @podman run -p 8080:8080 \
+        -e ENCRYPTION_KEY=$ENCRYPTION_KEY \
+        -e PORT=8080 \
+        cloud-native-store
+
+# Test the Go sources (Units).
+test:
+    @go test -v -coverprofile=.coverprofile.out ./internal/app/core/services/...
+
 # Set up "Cloud Build" according to https://cloud.google.com/build/docs/build-push-docker-image.
 # Check if billing is enabled at: https://cloud.google.com/billing/docs/how-to/verify-billing-enabled#confirm_billing_is_enabled_on_a_project
 cloud-build-setup:
@@ -72,22 +91,3 @@ cloud-run:
     @gcloud run services add-iam-policy-binding $GCP_SERVICE \
         --member="allUsers" \
         --role="roles/run.invoker"
-
-# Build
-build:
-    @podman build -t cloud-native-store .
-
-# Generate an encryption key.
-genkey:
-    @go run cmd/genkey/main.go
-
-# Run the service.
-run:
-    @podman run -p 8080:8080 \
-        -e ENCRYPTION_KEY=$ENCRYPTION_KEY \
-        -e PORT=8080 \
-        cloud-native-store
-
-# Test the Go sources (Units).
-test:
-    @go test -v -coverprofile=.coverprofile.out ./internal/app/core/services/...
