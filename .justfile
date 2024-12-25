@@ -67,9 +67,13 @@ cloud-run:
         --member="allUsers" \
         --role="roles/run.invoker"
 
+# Generate an encryption key.
+genkey:
+    @go run cmd/genkey/main.go
+
 # Run the service.
 run:
-    @go run cmd/main.go
+    @go run cmd/service/main.go
 
 # Test the Go sources (Units).
 test:

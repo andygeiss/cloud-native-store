@@ -26,23 +26,18 @@ The motivation behind **Cloud Native Store** is to provide a practical example o
 Follow these steps to set up and run the **Cloud Native Store**:
 
 ### Prerequisites
-1. Install [Go](https://go.dev/) (version 1.18 or higher).
-3. Create an `.env` file with the following contents:
+1. Create an encryption key by running the following command:
+```bash
+just genkey
+```
+
+2. Create an `.env` file and set the encryption key:
 
 ```env
-ENCRYPTION_KEY="0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+ENCRYPTION_KEY="0a0375de7bd186c2f8d80ef94e5f3d357462f594ca6785d4779f52bcb2b65b85"
 ```
 
 ### Commands
-
-#### Set Up the Service
-To set up the necessary environment, including generating local TLS certificates:
-```bash
-just setup
-```
-This command will:
-- Create the directories `.cache` and `.tls`.
-- Generate a self-signed certificate for `localhost`.
 
 #### Test the Service
 To run unit tests:

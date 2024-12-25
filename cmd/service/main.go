@@ -24,7 +24,6 @@ func main() {
 	port := inmemory.NewObjectStore(1)
 	service := services.
 		NewObjectService(cfg).
-		// WithTransactionalLogger(logger).
 		WithPort(port)
 
 	// Set up the service. If an error occurs during setup, log it and terminate the program.
