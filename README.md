@@ -46,6 +46,13 @@ just test
 ```
 This will execute tests for the core service logic.
 
+#### Build the Service
+To build the service:
+```bash
+just build
+```
+This will create a docker image for the service.
+
 #### Run the Service
 To start the service:
 ```bash
