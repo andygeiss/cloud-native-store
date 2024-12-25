@@ -43,10 +43,16 @@ cloud-build:
 cloud-cli-setup:
     # Login and set up the project.
     @gcloud auth login
+
+    # Set the project and region.
     @gcloud config set project $GCP_PROJECT_ID
     @gcloud config set functions/region $GCP_REGION
     @gcloud config set run/region $GCP_REGION
+
+    # Disable usage reporting.
     @gcloud config set disable_usage_reporting false
+
+    # Update the components.
     @gcloud components update
 
 # Set up Google Cloud Run.
