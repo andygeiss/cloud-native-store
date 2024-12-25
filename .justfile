@@ -73,13 +73,20 @@ cloud-run:
         --member="allUsers" \
         --role="roles/run.invoker"
 
+# Build
+build:
+    @podman build -t cloud-native-store .
+
 # Generate an encryption key.
 genkey:
     @go run cmd/genkey/main.go
 
 # Run the service.
 run:
-    @go run cmd/service/main.go
+    @podman run -p 8080:8080 \
+        -e ENCRYPTION_KEY=$ENCRYPTION_KEY \
+        -e PORT=8080 \
+        cloud-native-store
 
 # Test the Go sources (Units).
 test:

@@ -21,10 +21,10 @@ func main() {
 	}
 
 	// Create a new object service and configure it with the transactional logger and the in-memory port.
-	port := inmemory.NewObjectStore(1)
+	objectPort := inmemory.NewObjectStore(1)
 	service := services.
 		NewObjectService(cfg).
-		WithPort(port)
+		WithPort(objectPort)
 
 	// Set up the service. If an error occurs during setup, log it and terminate the program.
 	if err := service.Setup(); err != nil {
@@ -37,8 +37,9 @@ func main() {
 	mux := api.Route(service)
 
 	// Start the HTTP server.
-	log.Printf("start listening...")
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), mux); err != nil {
+	serverPort := os.Getenv("PORT")
+	log.Printf("start listening at port %s ...", serverPort)
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", serverPort), mux); err != nil {
 		log.Fatalf("listening failed: %v", err)
 	}
 }
