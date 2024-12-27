@@ -17,7 +17,8 @@ import (
 func main() {
 	// Create a new configuration object.
 	cfg := &config.Config{
-		Key: security.Getenv("ENCRYPTION_KEY"),
+		Key:  security.Getenv("ENCRYPTION_KEY"),
+		Port: os.Getenv("PORT"),
 	}
 
 	// Create a new object service and configure it with the transactional logger and the in-memory port.
@@ -37,9 +38,8 @@ func main() {
 	mux := api.Route(service)
 
 	// Start the HTTP server.
-	serverPort := os.Getenv("PORT")
-	log.Printf("start listening at port %s ...", serverPort)
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", serverPort), mux); err != nil {
+	log.Printf("start listening at port %s ...", cfg.Port)
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), mux); err != nil {
 		log.Fatalf("listening failed: %v", err)
 	}
 }
