@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"encoding/base64"
 	"log"
 	"time"
 
@@ -79,8 +80,12 @@ func (a *ObjectService) Get(ctx context.Context, key string) (value string, err 
 		return
 	}
 
+	// Decode the ciphertext from base64.
+	ciphertext, _ := base64.StdEncoding.DecodeString(value)
+
 	// Decrypt the value using the encryption key from the configuration.
-	plaintext, _ := security.Decrypt([]byte(value), a.cfg.Key)
+	plaintext, _ := security.Decrypt(ciphertext, a.cfg.Service.Key)
+
 	value = string(plaintext)
 
 	return value, nil
@@ -90,7 +95,10 @@ func (a *ObjectService) Get(ctx context.Context, key string) (value string, err 
 func (a *ObjectService) Put(ctx context.Context, key, value string) (err error) {
 
 	// Encrypt the value using the encryption key from the configuration.
-	value = string(security.Encrypt([]byte(value), a.cfg.Key))
+	value = string(security.Encrypt([]byte(value), a.cfg.Service.Key))
+
+	// Encode the value to base64.
+	value = base64.StdEncoding.EncodeToString([]byte(value))
 
 	// Define the function to be executed with the stability patterns applied.
 	fn := func() service.Function[string, string] {

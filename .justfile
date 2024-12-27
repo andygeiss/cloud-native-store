@@ -10,6 +10,10 @@ genkey:
 
 # Run the service.
 run:
+    @go run cmd/service/main.go
+
+# Run the service in a container.
+run-image:
     @podman run -p 8080:8080 \
         -e ENCRYPTION_KEY=$ENCRYPTION_KEY \
         -e PORT=8080 \
@@ -61,7 +65,7 @@ cloud-build:
 # Set up Google Cloud SDK.
 cloud-cli-setup:
     # Login and set up the project.
-    @gcloud auth login
+    @gcloud auth application-default login
 
     # Set the project and region.
     @gcloud config set project $GCP_PROJECT_ID
@@ -91,3 +95,28 @@ cloud-run:
     @gcloud run services add-iam-policy-binding $GCP_SERVICE \
         --member="allUsers" \
         --role="roles/run.invoker"
+
+# Set up Google Cloud Spanner.
+cloud-spanner-setup:
+    # Enable the Cloud Storage API.
+    @gcloud services enable \
+        spanner.googleapis.com
+
+    # Create a new instance.
+    @gcloud spanner instances create $GCP_SPANNER_INSTANCE_ID \
+        --config="regional-$GCP_REGION" \
+        --description="Regional Cloud Spanner" \
+        --nodes=2
+
+    # Create a new database.
+    @gcloud spanner databases create $GCP_SPANNER_DATABASE_ID \
+        --instance=$GCP_SPANNER_INSTANCE_ID
+
+    # Create a new table.
+    @gcloud spanner databases ddl update $GCP_SPANNER_DATABASE_ID \
+        --instance=$GCP_SPANNER_INSTANCE_ID \
+        --ddl="CREATE TABLE KeyValueStore (Key STRING(MAX) NOT NULL, Value STRING(MAX)) PRIMARY KEY (Key)"
+
+    # Verify the instance.
+    @gcloud spanner instances list
+    @gcloud spanner databases list --instance=$GCP_SPANNER_INSTANCE_ID
