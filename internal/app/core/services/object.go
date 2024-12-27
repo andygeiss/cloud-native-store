@@ -29,6 +29,7 @@ func NewObjectService(cfg *config.Config) *ObjectService {
 // Delete removes an object identified by the key from the port and logs the operation.
 func (a *ObjectService) Delete(ctx context.Context, key string) (err error) {
 
+	// Define the function to be executed with the stability patterns applied.
 	fn := func() service.Function[string, string] {
 		return func(context.Context, string) (value string, err error) {
 			err = a.port.Delete(ctx, key)
@@ -36,16 +37,19 @@ func (a *ObjectService) Delete(ctx context.Context, key string) (err error) {
 		}
 	}()
 
+	// Apply the stability patterns to the function.
 	fn = stability.Timeout(fn, 5*time.Second)
 	fn = stability.Debounce(fn, time.Second/time.Duration(10))
 	fn = stability.Retry(fn, 3, 5*time.Second)
 	fn = stability.Breaker(fn, 3)
 
+	// Execute the function with the stability patterns applied.
 	_, err = fn(ctx, key)
 	if err != nil {
 		return
 	}
 
+	// If a transactional logger is configured, write the delete operation to the log.
 	if a.tx != nil {
 		a.tx.WriteDelete(key)
 	}
@@ -56,22 +60,26 @@ func (a *ObjectService) Delete(ctx context.Context, key string) (err error) {
 // Get retrieves an object identified by the key from the port.
 func (a *ObjectService) Get(ctx context.Context, key string) (value string, err error) {
 
+	// Define the function to be executed with the stability patterns applied.
 	fn := func() service.Function[string, string] {
 		return func(context.Context, string) (string, error) {
 			return a.port.Get(ctx, key)
 		}
 	}()
 
+	// Apply the stability patterns to the function.
 	fn = stability.Timeout(fn, 5*time.Second)
 	fn = stability.Debounce(fn, time.Second/time.Duration(10))
 	fn = stability.Retry(fn, 3, 5*time.Second)
 	fn = stability.Breaker(fn, 3)
 
+	// Execute the function with the stability patterns applied.
 	value, err = fn(ctx, key)
 	if err != nil {
 		return
 	}
 
+	// Decrypt the value using the encryption key from the configuration.
 	plaintext, _ := security.Decrypt([]byte(value), a.cfg.Key)
 	value = string(plaintext)
 
@@ -81,8 +89,10 @@ func (a *ObjectService) Get(ctx context.Context, key string) (value string, err 
 // Put adds or updates an object identified by the key and logs the operation.
 func (a *ObjectService) Put(ctx context.Context, key, value string) (err error) {
 
+	// Encrypt the value using the encryption key from the configuration.
 	value = string(security.Encrypt([]byte(value), a.cfg.Key))
 
+	// Define the function to be executed with the stability patterns applied.
 	fn := func() service.Function[string, string] {
 		return func(context.Context, string) (string, error) {
 			err = a.port.Put(ctx, key, value)
@@ -90,16 +100,19 @@ func (a *ObjectService) Put(ctx context.Context, key, value string) (err error) 
 		}
 	}()
 
+	// Apply the stability patterns to the function.
 	fn = stability.Timeout(fn, 5*time.Second)
 	fn = stability.Debounce(fn, time.Second/time.Duration(10))
 	fn = stability.Retry(fn, 3, 5*time.Second)
 	fn = stability.Breaker(fn, 3)
 
+	// Execute the function with the stability patterns applied.
 	value, err = fn(ctx, key)
 	if err != nil {
 		return
 	}
 
+	// If a transactional logger is configured, write the put operation to the log.
 	if a.tx != nil {
 		a.tx.WritePut(key, value)
 	}
