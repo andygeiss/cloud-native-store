@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/andygeiss/cloud-native-store/internal/app/adapters/inbound/api"
-	"github.com/andygeiss/cloud-native-store/internal/app/adapters/outbound/inmemory"
+	"github.com/andygeiss/cloud-native-store/internal/app/adapters/outbound/gcp"
 	"github.com/andygeiss/cloud-native-store/internal/app/config"
 	"github.com/andygeiss/cloud-native-store/internal/app/core/services"
 	"github.com/andygeiss/cloud-native-utils/security"
@@ -17,12 +17,24 @@ import (
 func main() {
 	// Create a new configuration object.
 	cfg := &config.Config{
-		Key:  security.Getenv("ENCRYPTION_KEY"),
-		Port: os.Getenv("PORT"),
+		PortCloudSpanner: config.PortCloudSpanner{
+			ProjectID:  os.Getenv("GCP_PROJECT_ID"),
+			DatabaseID: os.Getenv("GCP_SPANNER_DATABASE_ID"),
+			InstanceID: os.Getenv("GCP_SPANNER_INSTANCE_ID"),
+			Table:      "KeyValueStore",
+		},
+		Service: config.Service{
+			Key: security.Getenv("ENCRYPTION_KEY"),
+		},
+		Server: config.Server{
+			Port: os.Getenv("PORT"),
+		},
 	}
 
-	// Create a new object service and configure it with the transactional logger and the in-memory port.
-	objectPort := inmemory.NewObjectStore(1)
+	// Create a new Cloud Spanner adapter.
+	objectPort := gcp.NewCloudSpanner(cfg)
+
+	// Create a new Object Service.
 	service := services.
 		NewObjectService(cfg).
 		WithPort(objectPort)
@@ -38,8 +50,8 @@ func main() {
 	mux := api.Route(service)
 
 	// Start the HTTP server.
-	log.Printf("start listening at port %s ...", cfg.Port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.Port), mux); err != nil {
+	log.Printf("start listening at port %s ...", cfg.Server.Port)
+	if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.Server.Port), mux); err != nil {
 		log.Fatalf("listening failed: %v", err)
 	}
 }

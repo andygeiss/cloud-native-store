@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/andygeiss/cloud-native-store/internal/app/core/services"
@@ -23,6 +24,7 @@ func Delete(service *services.ObjectService) http.HandlerFunc {
 
 		if err := service.Delete(r.Context(), req.Key); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
+			log.Printf("service.Delete error: %v", err)
 			return
 		}
 
@@ -50,6 +52,7 @@ func Get(service *services.ObjectService) http.HandlerFunc {
 		value, err := service.Get(r.Context(), req.Key)
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
+			log.Printf("service.Get error: %v", err)
 			return
 		}
 
@@ -77,6 +80,7 @@ func Put(service *services.ObjectService) http.HandlerFunc {
 
 		if err := service.Put(r.Context(), req.Key, req.Value); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
+			log.Printf("service.Put error: %v", err)
 			return
 		}
 
