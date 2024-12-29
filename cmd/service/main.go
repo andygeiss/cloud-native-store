@@ -2,9 +2,7 @@
 package main
 
 import (
-	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/andygeiss/cloud-native-store/internal/app/adapters/inbound/api"
@@ -49,9 +47,13 @@ func main() {
 	// Initialize the API router using the configuration object.
 	mux := api.Route(service)
 
+	// Create a new secure server.
+	server := security.NewServer(mux)
+	defer server.Close()
+
 	// Start the HTTP server.
 	log.Printf("start listening at port %s ...", cfg.Server.Port)
-	if err := http.ListenAndServe(fmt.Sprintf(":%s", cfg.Server.Port), mux); err != nil {
+	if err := server.ListenAndServe(); err != nil {
 		log.Fatalf("listening failed: %v", err)
 	}
 }
