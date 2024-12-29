@@ -175,6 +175,10 @@ func (a *ObjectService) Setup() (err error) {
 
 // Teardown cleans up any resources used by the ObjectService.
 func (a *ObjectService) Teardown() {
+	// Skip if there is no transactional logger configured.
+	if a.tx == nil {
+		return
+	}
 	if err := a.tx.Close(); err != nil {
 		log.Fatalf("error during close: %v", err)
 	}
