@@ -1,7 +1,7 @@
 set dotenv-load
 
 # Build
-build:
+build-image:
     @podman build -t cloud-native-store .
 
 # Generate an encryption key.
@@ -13,7 +13,7 @@ run:
     @go run cmd/service/main.go
 
 # Run the service in a container.
-run-image:
+run-container:
     @podman run -p 8080:8080 \
         -e ENCRYPTION_KEY=$ENCRYPTION_KEY \
         -e PORT=8080 \
