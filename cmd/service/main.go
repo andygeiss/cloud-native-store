@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"embed"
 	"log"
 	"net/http"
 	"os"
@@ -14,6 +15,9 @@ import (
 	"github.com/andygeiss/cloud-native-utils/security"
 	"github.com/andygeiss/cloud-native-utils/service"
 )
+
+//go:embed assets
+var efs embed.FS
 
 func main() {
 	// Create a new configuration object.
@@ -28,6 +32,7 @@ func main() {
 			Key: security.Getenv("ENCRYPTION_KEY"),
 		},
 		Server: config.Server{
+			Efs:  efs,
 			Port: os.Getenv("PORT"),
 		},
 	}
@@ -51,7 +56,7 @@ func main() {
 	defer svc.Teardown()
 
 	// Initialize the API router using the configuration object.
-	mux := api.Route(svc, ctx)
+	mux := api.Route(svc, ctx, cfg)
 
 	// Create a new secure server.
 	srv := security.NewServer(mux)

@@ -1,5 +1,7 @@
 package config
 
+import "embed"
+
 type Config struct {
 	PortCloudSpanner PortCloudSpanner `json:"port_cloud_spanner"`
 	Server           Server           `json:"server"`
@@ -14,7 +16,8 @@ type PortCloudSpanner struct {
 }
 
 type Server struct {
-	Port string `json:"port"`
+	Efs  embed.FS `json:"-"`
+	Port string   `json:"port"`
 }
 
 type Service struct {
