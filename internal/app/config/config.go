@@ -16,8 +16,9 @@ type PortCloudSpanner struct {
 }
 
 type Server struct {
-	Efs  embed.FS `json:"-"`
-	Port string   `json:"port"`
+	Efs       embed.FS `json:"-"`
+	Port      string   `json:"port"`
+	Templates string   `json:"templates"`
 }
 
 type Service struct {

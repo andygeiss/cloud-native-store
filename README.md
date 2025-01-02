@@ -54,8 +54,6 @@ just run
 
 #### How to Test
 
-After running the service, you can verify its health by visiting the following endpoint in your browser or using a tool like curl:
+After running the service, you can verify its health by visiting the UI in your browser:
 
-[http://localhost:8080/health](http://localhost:8080/health)
-
-If the service is up and running, you will receive a 200 OK status and a brief JSON response indicating the service's health status.
+[http://localhost:8080/](http://localhost:8080/ui)

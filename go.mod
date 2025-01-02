@@ -4,7 +4,7 @@ go 1.23.2
 
 require (
 	cloud.google.com/go/spanner v1.73.0
-	github.com/andygeiss/cloud-native-utils v0.1.21
+	github.com/andygeiss/cloud-native-utils v0.1.24
 )
 
 require (

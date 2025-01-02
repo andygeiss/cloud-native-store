@@ -48,8 +48,9 @@ func main() {
 			Key: security.Getenv("ENCRYPTION_KEY"),
 		},
 		Server: config.Server{
-			Efs:  efs,
-			Port: os.Getenv("PORT"),
+			Efs:       efs,
+			Port:      os.Getenv("PORT"),
+			Templates: "assets/*.html",
 		},
 	}
 

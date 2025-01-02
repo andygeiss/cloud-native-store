@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/andygeiss/cloud-native-store/internal/app/core/services"
+	"github.com/andygeiss/cloud-native-utils/templating"
 )
 
 // Delete defines an HTTP handler function for deleting an object by key.
@@ -86,5 +87,12 @@ func Put(service *services.ObjectService) http.HandlerFunc {
 
 		w.WriteHeader(http.StatusOK)
 		_ = json.NewEncoder(w).Encode(res)
+	}
+}
+
+func View(engine *templating.Engine, name string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		engine.Render(w, name, nil)
 	}
 }
