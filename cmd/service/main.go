@@ -35,6 +35,7 @@ func main() {
 			Server: config.Server{
 				Efs:  efs,
 				Port: os.Getenv("PORT"),
+				Templates: "assets/*.html",
 			},
 		}
 

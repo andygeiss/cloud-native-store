@@ -28,5 +28,6 @@ func Route(service *services.ObjectService, ctx context.Context, cfg *config.Con
 
 	// Add the UI endpoints for HTMX.
 	mux.HandleFunc("GET /ui", View(engine, "index"))
+	mux.HandleFunc("GET /ui/store", View(engine, "store"))
 	return mux
 }
