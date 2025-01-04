@@ -20,29 +20,6 @@ import (
 var efs embed.FS
 
 func main() {
-	/*
-		// Create a configuration for Cloud Spanner.
-		cfg := &config.Config{
-			PortCloudSpanner: config.PortCloudSpanner{
-				ProjectID:  os.Getenv("GCP_PROJECT_ID"),
-				DatabaseID: os.Getenv("GCP_SPANNER_DATABASE_ID"),
-				InstanceID: os.Getenv("GCP_SPANNER_INSTANCE_ID"),
-				Table:      "KeyValueStore",
-			},
-			Service: config.Service{
-				Key: security.Getenv("ENCRYPTION_KEY"),
-			},
-			Server: config.Server{
-				Efs:  efs,
-				Port: os.Getenv("PORT"),
-				Templates: "assets/*.html",
-			},
-		}
-
-		// Create a new Cloud Spanner adapter.
-		objectPort := gcp.NewCloudSpanner(cfg)
-	*/
-
 	// Create a configuration for an in-memory store.
 	cfg := &config.Config{
 		Service: config.Service{
