@@ -90,9 +90,24 @@ func Put(service *services.ObjectService) http.HandlerFunc {
 	}
 }
 
-func View(engine *templating.Engine, name string) http.HandlerFunc {
+// View defines an HTTP handler function for rendering a template with data.
+func View(engine *templating.Engine, name string, data any) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
-		engine.Render(w, name, nil)
+		engine.Render(w, name, data)
+	}
+}
+
+// ViewIndex defines an HTTP handler function for rendering the index template.
+func ViewIndex(engine *templating.Engine) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		View(engine, "index", nil)(w, r)
+	}
+}
+
+// ViewStore defines an HTTP handler function for rendering the store template.
+func ViewStore(engine *templating.Engine) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		View(engine, "store", nil)(w, r)
 	}
 }
