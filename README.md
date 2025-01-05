@@ -39,7 +39,7 @@ GITHUB_CLIENT_ID=""
 GITHUB_CLIENT_SECRET=""
 GITHUB_REDIRECT_URL="http://localhost:8080/auth/callback"
 GITHUB_SCOPE="user:read"
-HOME_PATH="/ui/store"
+HOME_PATH="/ui"
 ```
 
 ### Commands
