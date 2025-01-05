@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/andygeiss/cloud-native-store/internal/app/core/services"
+	"github.com/andygeiss/cloud-native-utils/security"
 	"github.com/andygeiss/cloud-native-utils/templating"
 )
 
@@ -99,15 +100,19 @@ func View(engine *templating.Engine, name string, data any) http.HandlerFunc {
 }
 
 // ViewIndex defines an HTTP handler function for rendering the index template.
-func ViewIndex(engine *templating.Engine) http.HandlerFunc {
+func ViewIndex(engine *templating.Engine, serverSessions *security.ServerSessions) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		View(engine, "index", nil)(w, r)
+		id := r.FormValue("s")
+		session, _ := serverSessions.Get(id)
+		View(engine, "index", session)(w, r)
 	}
 }
 
 // ViewStore defines an HTTP handler function for rendering the store template.
-func ViewStore(engine *templating.Engine) http.HandlerFunc {
+func ViewStore(engine *templating.Engine, serverSessions *security.ServerSessions) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		View(engine, "store", nil)(w, r)
+		id := r.FormValue("s")
+		session, _ := serverSessions.Get(id)
+		View(engine, "store", session)(w, r)
 	}
 }

@@ -7,6 +7,6 @@
         <script src="https://unpkg.com/htmx.org/dist/htmx.min.js"></script>
         <title>Cloud Native Store</title>
     </head>
-    <body hx-get="/ui/store" hx-trigger="load"></body>
+    <body hx-get="/ui/store?s={{ .ID }}" hx-trigger="load"></body>
 </html>
 {{ end }}

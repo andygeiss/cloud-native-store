@@ -31,10 +31,15 @@ Follow these steps to set up and run the **Cloud Native Store**:
 just genkey
 ```
 
-2. Create an `.env` file and set the encryption key:
+2. Create an `.env` file and replace the following values besides `HOME_PATH` with your own:
 
 ```env
 ENCRYPTION_KEY="0a0375de7bd186c2f8d80ef94e5f3d357462f594ca6785d4779f52bcb2b65b85"
+GITHUB_CLIENT_ID=""
+GITHUB_CLIENT_SECRET=""
+GITHUB_REDIRECT_URL="http://localhost:8080/auth/callback"
+GITHUB_SCOPE="user:read"
+HOME_PATH="/ui/store"
 ```
 
 ### Commands
@@ -56,4 +61,4 @@ just run
 
 After running the service, you can verify its health by visiting the UI in your browser:
 
-[http://localhost:8080/](http://localhost:8080/ui)
+[http://localhost:8080/ui](http://localhost:8080/ui)

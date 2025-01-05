@@ -1,1 +1,6 @@
-{{ define "store" }} {{ end }}
+{{ define "store" }} {{ if .ID }}
+<img src="{{ .AvatarURL }}" style="width: 32px; height: 32px" />
+<p>Hello {{ .Name }} !</p>
+{{ else}}
+<a href="/auth/login">Login with GitHub</a>
+{{ end }} {{ end }}
