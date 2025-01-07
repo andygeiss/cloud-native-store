@@ -34,12 +34,23 @@ just genkey
 2. Create an `.env` file and replace the following values besides `HOME_PATH` with your own:
 
 ```env
+CLIENT_TIMEOUT="5s"
+
 ENCRYPTION_KEY="0a0375de7bd186c2f8d80ef94e5f3d357462f594ca6785d4779f52bcb2b65b85"
+
 GITHUB_CLIENT_ID=""
 GITHUB_CLIENT_SECRET=""
 GITHUB_REDIRECT_URL="http://localhost:8080/auth/callback"
 GITHUB_SCOPE="user:read"
+
 HOME_PATH="/ui"
+
+PORT="8080"
+
+SERVER_IDLE_TIMEOUT="5s"
+SERVER_READ_TIMEOUT="5s"
+SERVER_READ_HEADER_TIMEOUT="5s"
+SERVER_WRITE_TIMEOUT="5s"
 ```
 
 ### Commands
