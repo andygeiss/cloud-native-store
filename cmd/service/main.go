@@ -33,7 +33,7 @@ func main() {
 	}
 
 	// Create a new in-memory adapter.
-	objectPort := inmemory.NewObjectStore(2)
+	objectPort := inmemory.NewObjectStore(security.ParseInt("STORE_SHARDS", 2))
 
 	// Create a new Object Service.
 	svc := services.

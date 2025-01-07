@@ -39,10 +39,10 @@ func (a *ObjectService) Delete(ctx context.Context, key string) (err error) {
 	}()
 
 	// Apply the stability patterns to the function.
-	fn = stability.Timeout(fn, 5*time.Second)
-	fn = stability.Debounce(fn, time.Second/time.Duration(10))
-	fn = stability.Retry(fn, 3, 5*time.Second)
-	fn = stability.Breaker(fn, 3)
+	fn = stability.Timeout(fn, security.ParseDuration("STORE_TIMEOUT", 5*time.Second))
+	fn = stability.Debounce(fn, time.Second/time.Duration(security.ParseInt("STORE_DEBOUNCE_PER_SEC", 50)))
+	fn = stability.Retry(fn, security.ParseInt("STORE_RETRY_MAX", 3), security.ParseDuration("STORE_RETRY_DELAY", 5*time.Second))
+	fn = stability.Breaker(fn, security.ParseInt("STORE_BREAKER_THRESHOLD", 3))
 
 	// Execute the function with the stability patterns applied.
 	_, err = fn(ctx, key)
@@ -69,10 +69,10 @@ func (a *ObjectService) Get(ctx context.Context, key string) (value string, err 
 	}()
 
 	// Apply the stability patterns to the function.
-	fn = stability.Timeout(fn, 5*time.Second)
-	fn = stability.Debounce(fn, time.Second/time.Duration(10))
-	fn = stability.Retry(fn, 3, 5*time.Second)
-	fn = stability.Breaker(fn, 3)
+	fn = stability.Timeout(fn, security.ParseDuration("STORE_TIMEOUT", 5*time.Second))
+	fn = stability.Debounce(fn, time.Second/time.Duration(security.ParseInt("STORE_DEBOUNCE_PER_SEC", 50)))
+	fn = stability.Retry(fn, security.ParseInt("STORE_RETRY_MAX", 3), security.ParseDuration("STORE_RETRY_DELAY", 5*time.Second))
+	fn = stability.Breaker(fn, security.ParseInt("STORE_BREAKER_THRESHOLD", 3))
 
 	// Execute the function with the stability patterns applied.
 	value, err = fn(ctx, key)
@@ -109,10 +109,10 @@ func (a *ObjectService) Put(ctx context.Context, key, value string) (err error) 
 	}()
 
 	// Apply the stability patterns to the function.
-	fn = stability.Timeout(fn, 5*time.Second)
-	fn = stability.Debounce(fn, time.Second/time.Duration(10))
-	fn = stability.Retry(fn, 3, 5*time.Second)
-	fn = stability.Breaker(fn, 3)
+	fn = stability.Timeout(fn, security.ParseDuration("STORE_TIMEOUT", 5*time.Second))
+	fn = stability.Debounce(fn, time.Second/time.Duration(security.ParseInt("STORE_DEBOUNCE_PER_SEC", 50)))
+	fn = stability.Retry(fn, security.ParseInt("STORE_RETRY_MAX", 3), security.ParseDuration("STORE_RETRY_DELAY", 5*time.Second))
+	fn = stability.Breaker(fn, security.ParseInt("STORE_BREAKER_THRESHOLD", 3))
 
 	// Execute the function with the stability patterns applied.
 	value, err = fn(ctx, key)
