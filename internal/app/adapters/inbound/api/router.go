@@ -15,7 +15,7 @@ import (
 func Route(service *services.ObjectService, ctx context.Context, cfg *config.Config) *http.ServeMux {
 	// Create a new mux with liveness and readyness endpoint.
 	// Embed the assets into the mux.
-	mux, serverSessions := security.Mux(ctx, cfg.Server.Efs)
+	mux, serverSessions := security.NewServeMux(ctx, cfg.Server.Efs)
 
 	// Add the store endpoints to the mux.
 	mux.HandleFunc("DELETE /api/v1/store", Delete(service))
